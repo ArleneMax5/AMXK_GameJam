@@ -1,30 +1,31 @@
-using System.Collections.Generic;
 using UnityEngine;
+using System.Collections.Generic;
 using UnityEngine.EventSystems;
-using UnityEngine.UI; // --- 新增: 引用UI命名空间以使用Image
 
-// 这是一个可复用的基础脚本，任何需要按钮导航的面板都可以继承它
-public class BaseNavigablePanel : MonoBehaviour
+// 总结：这个 BasePanel 类现在整合了键盘导航、鼠标悬停选择和点击激活按钮的完整逻辑。
+public class BasePanel : MonoBehaviour
 {
+    // 新增：让每个面板都知道自己的类型
+    [SerializeField] private PanelType panelType;
+    public PanelType PanelType => panelType;
+
     [Header("面板内的按钮列表")]
     [SerializeField] protected List<SelectableButton> buttons;
 
-    [Header("可选的背景蒙版")]
-    [SerializeField] protected Image shadowMask; // --- 新增 ---
-
     protected int currentIndex = -1;
-    private EventSystem eventSystem;
     private bool isNavigationActive = false;
+    private EventSystem eventSystem; // --- 新增: 引用 EventSystem ---
 
+    // --- 新增: Awake 方法用于获取 EventSystem ---
     protected virtual void Awake()
     {
         eventSystem = EventSystem.current;
     }
 
-    // 当面板被激活时，由 UIManager 调用
-    public virtual void OnPanelActive()
+    // 改为公共方法，由UIManager调用
+    public virtual void Show()
     {
-        if (shadowMask != null) shadowMask.gameObject.SetActive(true); // --- 新增 ---
+        gameObject.SetActive(true);
         isNavigationActive = true;
         if (buttons != null && buttons.Count > 0)
         {
@@ -32,21 +33,22 @@ public class BaseNavigablePanel : MonoBehaviour
         }
     }
 
-    // 当面板被隐藏时，由 UIManager 调用
-    public virtual void OnPanelInactive()
+    // 改为公共方法，由UIManager调用
+    public virtual void Hide()
     {
-        if (shadowMask != null) shadowMask.gameObject.SetActive(false); // --- 新增 ---
         isNavigationActive = false;
         if (currentIndex != -1 && currentIndex < buttons.Count)
         {
             buttons[currentIndex].OnDeselected(); // 取消选中效果
         }
         currentIndex = -1;
+        gameObject.SetActive(false);
     }
 
+    // --- 核心修改: 整合了键盘、鼠标悬停和点击的完整导航逻辑 ---
     protected virtual void Update()
     {
-        if (!isNavigationActive) return; // 如果导航未激活，则不执行任何操作
+        if (!isNavigationActive || buttons == null || buttons.Count == 0) return;
 
         // --- 键盘导航 ---
         if (Input.GetKeyDown(KeyCode.W) || Input.GetKeyDown(KeyCode.UpArrow))
@@ -78,7 +80,7 @@ public class BaseNavigablePanel : MonoBehaviour
             }
         }
 
-        // --- 激活按钮 (回车/空格/鼠标点击) ---
+        // --- 激活按钮 (回车/空格/鼠标左键) ---
         if (currentIndex != -1)
         {
             if (Input.GetKeyDown(KeyCode.Return) || Input.GetKeyDown(KeyCode.KeypadEnter) || Input.GetKeyDown(KeyCode.Space))
@@ -94,9 +96,15 @@ public class BaseNavigablePanel : MonoBehaviour
 
     void ChangeSelection(int direction)
     {
+        if (buttons == null || buttons.Count == 0) return;
+
+        // 如果之前没有选中任何按钮，则从第一个开始
         int newIndex = (currentIndex == -1) ? 0 : currentIndex + direction;
+
+        // 处理循环选择
         if (newIndex < 0) { newIndex = buttons.Count - 1; }
         else if (newIndex >= buttons.Count) { newIndex = 0; }
+
         SelectButton(newIndex);
     }
 
@@ -104,6 +112,7 @@ public class BaseNavigablePanel : MonoBehaviour
     {
         if (index < 0 || index >= buttons.Count) return;
 
+        // 如果选中了新的按钮，则取消上一个按钮的选中状态
         if (currentIndex != -1 && currentIndex != index && currentIndex < buttons.Count)
         {
             buttons[currentIndex].OnDeselected();
@@ -111,6 +120,11 @@ public class BaseNavigablePanel : MonoBehaviour
 
         currentIndex = index;
         buttons[currentIndex].OnSelected();
-        eventSystem.SetSelectedGameObject(buttons[currentIndex].gameObject);
+
+        // 更新 EventSystem 的选中对象，这对于手柄支持和某些UI交互很重要
+        if (eventSystem != null)
+        {
+            eventSystem.SetSelectedGameObject(buttons[currentIndex].gameObject);
+        }
     }
 }

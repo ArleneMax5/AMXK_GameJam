@@ -88,7 +88,6 @@ public class SelectableButton : MonoBehaviour
         OnActivated?.Invoke();
     }
 
-    // าฦณýมห OnPointerEnter บอ OnPointerClick
 
     void OnDestroy()
     {
