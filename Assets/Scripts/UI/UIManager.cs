@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Linq; // 需要引入Linq
 using UnityEngine;
 
 // 新增一个枚举来标识所有面板类型
@@ -13,37 +14,35 @@ public enum PanelType
     EventResult // 事件结果
 }
 
+// UIManager 负责管理所有UI面板的显示和隐藏，使用UI堆栈
 public class UIManager : MonoBehaviour
 {
     public static UIManager Instance { get; private set; }
 
-    // --- 核心修改 1: 添加一个 Transform 来指定面板的父对象 ---
     [Header("面板设置")]
-    [SerializeField] private Transform panelParent; // 将你的 Canvas 对象拖到这里
+    [SerializeField] private Transform panelParent;
     [SerializeField] private List<BasePanel> panelPrefabs;
     
     private Dictionary<PanelType, BasePanel> _panelInstances = new Dictionary<PanelType, BasePanel>();
-
-    // 核心：UI堆栈
     private Stack<BasePanel> _panelStack = new Stack<BasePanel>();
+
+    // 新增：定义基础排序顺序和每个面板之间的间隔
+    private const int BASE_SORT_ORDER = 10;
+    private const int SORT_ORDER_INCREMENT = 10;
 
     private void Awake()
     {
         if (Instance == null)
         {
             Instance = this;
-
-            // --- 核心修改 2: 检查 panelParent 是否已设置 ---
             if (panelParent == null)
             {
-                Debug.LogError("UIManager: Panel Parent 未设置！请将 Canvas 或一个用于容纳面板的子对象拖拽到 UIManager 的 Panel Parent 字段上。", this);
+                Debug.LogError("UIManager: Panel Parent 未设置！", this);
                 return;
             }
 
-            // 在游戏开始时实例化所有面板并禁用，放入字典
             foreach (var panelPrefab in panelPrefabs)
             {
-                // --- 核心修改 3: 使用 panelParent 作为实例化的父对象 ---
                 var panelInstance = Instantiate(panelPrefab, panelParent);
                 panelInstance.gameObject.SetActive(false);
                 _panelInstances.Add(panelInstance.PanelType, panelInstance);
@@ -57,17 +56,15 @@ public class UIManager : MonoBehaviour
 
     void Start()
     {
-        // 游戏开始时，只显示主菜单
         PushPanel(PanelType.MainMenu);
     }
 
     private void Update()
     {
-        // 全局的返回/暂停逻辑，现在变得极其简单
         if (Input.GetKeyDown(KeyCode.Escape))
         {
-            // 如果堆栈中有面板，就弹出一个
-            if (_panelStack.Count > 1)
+            // 如果堆栈中有多个面板，或者只有一个非GameUI的面板，则弹出
+            if (_panelStack.Count > 1 || (_panelStack.Count == 1 && _panelStack.Peek().PanelType != PanelType.GameUI))
             {
                 PopPanel();
             }
@@ -79,43 +76,41 @@ public class UIManager : MonoBehaviour
         }
     }
 
-    /// <summary>
-    /// 推入一个新面板到栈顶（显示新面板，可选择性隐藏旧的）
-    /// </summary>
+    // 修改：PushPanel不再隐藏之前的面板
     public void PushPanel(PanelType panelType)
     {
-        // 隐藏当前的栈顶面板
-        if (_panelStack.Count > 0)
+        if (_panelInstances.TryGetValue(panelType, out BasePanel panelToPush))
         {
-            _panelStack.Peek().Hide();
+            panelToPush.Show();
+            _panelStack.Push(panelToPush);
+            UpdatePanelsSortingOrder();
         }
-
-        BasePanel panelToPush = _panelInstances[panelType];
-        panelToPush.Show();
-        _panelStack.Push(panelToPush);
     }
 
-    /// <summary>
-    /// 从栈顶弹出一个面板（关闭当前面板，并显示上一个）
-    /// </summary>
+    // 修改：PopPanel不再显示新的顶部面板，只负责弹出和更新排序
     public void PopPanel()
     {
         if (_panelStack.Count <= 0) return;
 
-        // 弹出并隐藏当前栈顶
         BasePanel panelToPop = _panelStack.Pop();
         panelToPop.Hide();
 
-        // 重新显示新的栈顶面板
-        if (_panelStack.Count > 0)
+        UpdatePanelsSortingOrder();
+    }
+
+    // 新增：一个辅助方法，根据面板在堆栈中的顺序更新其Canvas排序
+    private void UpdatePanelsSortingOrder()
+    {
+        int currentOrder = BASE_SORT_ORDER;
+        // 我们需要从栈底到栈顶遍历，所以先将栈反转
+        foreach (var panel in _panelStack.Reverse())
         {
-            _panelStack.Peek().Show();
+            panel.SetSortOrder(currentOrder);
+            currentOrder += SORT_ORDER_INCREMENT;
         }
     }
 
-    /// <summary>
-    /// 关闭所有面板，然后打开一个全新的面板（用于主菜单->游戏界面的切换）
-    /// </summary>
+    // 关闭所有面板，然后打开一个全新的面板（用于主菜单->游戏界面的切换）
     public void ClearAndPushPanel(PanelType panelType)
     {
         while (_panelStack.Count > 0)
