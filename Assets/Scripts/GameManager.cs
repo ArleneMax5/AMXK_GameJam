@@ -6,8 +6,7 @@ public class GameManager : MonoBehaviour
 {
     public static GameManager Instance { get; private set; }
 
-    // --- 核心游戏数据 ---
-    // 使用属性（Property）来封装数据，外部只能读取，只能由GameManager内部修改
+    // --- 核心游戏数据（外部只读） ---
     public int CurrentDay { get; private set; }
     public int ActionPoints { get; private set; }
     public int Health { get; private set; }
@@ -17,7 +16,7 @@ public class GameManager : MonoBehaviour
     public int Collectibles { get; private set; }
     public int Medicine { get; private set; }
 
-    // --- 事件：当任何数据发生变化时，就发出这个广播 ---
+    // --- 唯一的事件：UI 订阅它来刷新 ---
     public event Action OnStatsChanged;
 
     private void Awake()
@@ -25,7 +24,7 @@ public class GameManager : MonoBehaviour
         if (Instance == null)
         {
             Instance = this;
-            DontDestroyOnLoad(gameObject); // 确保GameManager在切换场景时不会被销毁
+            DontDestroyOnLoad(gameObject);
         }
         else
         {
@@ -33,33 +32,31 @@ public class GameManager : MonoBehaviour
         }
     }
 
-    // 当开始一个新游戏时，由 GameEventManager 调用
+    // 统一触发点
+    private void RaiseStatsChanged() => OnStatsChanged?.Invoke();
+
+    // 开始新游戏（例子）
     public void InitializeNewGame()
     {
-        // 初始化所有数据
         CurrentDay = 1;
-        ActionPoints = 8; // 假设每天有8个行动点
-        Health = 100;   
+        ActionPoints = 8;
+        Health = 100;
         Hunger = 100;
         Sanity = 100;
         Food = 0;
         Collectibles = 0;
         Medicine = 0;
 
-        // 初始化完成后，立即广播一次，让UI显示初始状态
-        OnStatsChanged?.Invoke();
+        RaiseStatsChanged();
     }
 
-    // --- 核心逻辑方法示例 ---
-
+    // 示例逻辑
     public void EndDay()
     {
         CurrentDay++;
-        ActionPoints = 8; // 重置行动点
-        Hunger -= 1;   // 每天消耗饥饿值
-
-        // 数据变化后，广播通知
-        OnStatsChanged?.Invoke();
+        ActionPoints = 8;
+        Hunger -= 1;
+        RaiseStatsChanged();
     }
 
     public void UseActionPoints(int amount)
@@ -67,13 +64,31 @@ public class GameManager : MonoBehaviour
         if (ActionPoints >= amount)
         {
             ActionPoints -= amount;
-            OnStatsChanged?.Invoke();
+            RaiseStatsChanged();
         }
     }
 
     public void AddFood(int amount)
     {
         Food += amount;
-        OnStatsChanged?.Invoke();
+        RaiseStatsChanged();
+    }
+
+    // ==== 读档恢复入口（供 SaveLoadManager 调用） ====
+    public void ApplySaveData(
+        int health, int hunger, int sanity,
+        int currentDay, int food, int collectibles, int medicine, int actionPoints)
+    {
+        Health = health;
+        Hunger = hunger;
+        Sanity = sanity;
+
+        CurrentDay = currentDay;
+        Food = food;
+        Collectibles = collectibles;
+        Medicine = medicine;
+        ActionPoints = actionPoints;
+
+        RaiseStatsChanged();
     }
 }
