@@ -2,9 +2,10 @@ using UnityEngine;
 using UnityEngine.Events;
 using DG.Tweening;
 using TMPro;
+using UnityEngine.EventSystems;
 
 // 移除 IPointerEnterHandler 和 IPointerClickHandler
-public class SelectableButton : MonoBehaviour 
+public class SelectableButton : MonoBehaviour, IPointerEnterHandler, IPointerClickHandler
 {
     [Header("UI 元素引用")]
     [SerializeField] private GameObject leftArrow;
@@ -13,12 +14,12 @@ public class SelectableButton : MonoBehaviour
 
     [Header("箭头动画设置")]
     [SerializeField] private float floatDistance = 20f;
-    [SerializeField] private float floatDuration = 1.5f;
+    [SerializeField] private float floatDuration = 0.5f;
 
     [Header("文本发光动画设置")]
     [SerializeField] private Color glowColor = Color.white;
     [SerializeField] [Range(0, 1)] private float maxGlowPower = 0.5f;
-    [SerializeField] private float glowDuration = 1.0f;
+    [SerializeField] private float glowDuration = 1.5f;
 
     [Header("按钮点击事件")]
     public UnityEvent OnActivated;
@@ -32,6 +33,8 @@ public class SelectableButton : MonoBehaviour
     private Material buttonLabelMaterial;
     private float initialGlowPower;
 
+    private BasePanel parentPanel; // 对父面板的引用
+
     void Awake()
     {
         if (buttonLabel != null)
@@ -42,6 +45,23 @@ public class SelectableButton : MonoBehaviour
         }
         // 初始时隐藏所有效果
         OnDeselected();
+
+        parentPanel = GetComponentInParent<BasePanel>();
+    }
+
+    // 当鼠标悬停时由事件系统自动调用
+    public void OnPointerEnter(PointerEventData eventData)
+    {
+        if (parentPanel != null)
+        {
+            parentPanel.SelectButton(this);
+        }
+    }
+
+    // 当鼠标点击时由事件系统自动调用
+    public void OnPointerClick(PointerEventData eventData)
+    {
+        ActivateButton();
     }
 
     public void OnSelected()

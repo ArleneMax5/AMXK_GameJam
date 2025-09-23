@@ -2,10 +2,11 @@ using UnityEngine;
 using System.Collections.Generic;
 using UnityEngine.EventSystems;
 
-// 总结：这个 BasePanel 类现在整合了键盘导航、鼠标悬停选择和点击激活按钮的完整逻辑。
+// 总结：这个 BasePanel 类实现了统一的键盘导航、鼠标悬停选择和点击确认按钮的逻辑。
+[RequireComponent(typeof(Canvas))] // 强制要求每个面板都有一个Canvas组件
 public class BasePanel : MonoBehaviour
 {
-    // 新增：让每个面板都知道自己的类型
+    // 让每个面板知道自己的类型
     [SerializeField] private PanelType panelType;
     public PanelType PanelType => panelType;
 
@@ -14,15 +15,20 @@ public class BasePanel : MonoBehaviour
 
     protected int currentIndex = -1;
     private bool isNavigationActive = false;
-    private EventSystem eventSystem; // --- 新增: 引用 EventSystem ---
+    private EventSystem eventSystem;
+    private Canvas panelCanvas; // 新增：对Canvas组件的引用
 
-    // --- 新增: Awake 方法用于获取 EventSystem ---
     protected virtual void Awake()
     {
         eventSystem = EventSystem.current;
+        panelCanvas = GetComponent<Canvas>(); // 获取Canvas组件
+        if (panelCanvas == null)
+        {
+            Debug.LogError($"面板 {gameObject.name} 缺少 Canvas 组件！", this);
+        }
     }
 
-    // 改为公共方法，由UIManager调用
+    // 作为面板被激活时，由UIManager调用
     public virtual void Show()
     {
         gameObject.SetActive(true);
@@ -33,7 +39,7 @@ public class BasePanel : MonoBehaviour
         }
     }
 
-    // 改为公共方法，由UIManager调用
+    // 作为面板被隐藏时，由UIManager调用
     public virtual void Hide()
     {
         isNavigationActive = false;
@@ -45,7 +51,17 @@ public class BasePanel : MonoBehaviour
         gameObject.SetActive(false);
     }
 
-    // --- 核心修改: 整合了键盘、鼠标悬停和点击的完整导航逻辑 ---
+    // 修改：移除了对 overrideSorting 的设置，因为它只用于嵌套Canvas
+    public void SetSortOrder(int order)
+    {
+        if (panelCanvas != null)
+        {
+            // 对于根Canvas，我们只需要直接设置 sortingOrder
+            panelCanvas.sortingOrder = order;
+        }
+    }
+
+    // 只处理键盘导航
     protected virtual void Update()
     {
         if (!isNavigationActive || buttons == null || buttons.Count == 0) return;
@@ -60,37 +76,10 @@ public class BasePanel : MonoBehaviour
             ChangeSelection(1);
         }
 
-        // --- 鼠标悬停选择 ---
-        PointerEventData pointerData = new PointerEventData(eventSystem) { position = Input.mousePosition };
-        List<RaycastResult> results = new List<RaycastResult>();
-        eventSystem.RaycastAll(pointerData, results);
-
-        SelectableButton hoveredButton = null;
-        if (results.Count > 0)
+        // --- 键盘确认按钮 (回车/空格) ---
+        if (currentIndex != -1 && (Input.GetKeyDown(KeyCode.Return) || Input.GetKeyDown(KeyCode.KeypadEnter) || Input.GetKeyDown(KeyCode.Space)))
         {
-            hoveredButton = results[0].gameObject.GetComponentInParent<SelectableButton>();
-        }
-
-        if (hoveredButton != null && buttons.Contains(hoveredButton))
-        {
-            int newIndex = buttons.IndexOf(hoveredButton);
-            if (newIndex != currentIndex)
-            {
-                SelectButton(newIndex);
-            }
-        }
-
-        // --- 激活按钮 (回车/空格/鼠标左键) ---
-        if (currentIndex != -1)
-        {
-            if (Input.GetKeyDown(KeyCode.Return) || Input.GetKeyDown(KeyCode.KeypadEnter) || Input.GetKeyDown(KeyCode.Space))
-            {
-                buttons[currentIndex].ActivateButton();
-            }
-            else if (Input.GetMouseButtonDown(0) && hoveredButton == buttons[currentIndex])
-            {
-                buttons[currentIndex].ActivateButton();
-            }
+            buttons[currentIndex].ActivateButton();
         }
     }
 
@@ -101,11 +90,21 @@ public class BasePanel : MonoBehaviour
         // 如果之前没有选中任何按钮，则从第一个开始
         int newIndex = (currentIndex == -1) ? 0 : currentIndex + direction;
 
-        // 处理循环选择
+        // 实现循环选择
         if (newIndex < 0) { newIndex = buttons.Count - 1; }
         else if (newIndex >= buttons.Count) { newIndex = 0; }
 
         SelectButton(newIndex);
+    }
+
+    // 公开此方法，以便 SelectableButton 可以调用它
+    public void SelectButton(SelectableButton button)
+    {
+        int index = buttons.IndexOf(button);
+        if (index != -1)
+        {
+            SelectButton(index);
+        }
     }
 
     void SelectButton(int index)
@@ -121,7 +120,7 @@ public class BasePanel : MonoBehaviour
         currentIndex = index;
         buttons[currentIndex].OnSelected();
 
-        // 更新 EventSystem 的选中对象，这对于手柄支持和某些UI交互很重要
+        // 更新 EventSystem 的选中对象，以便直接支持需要它的某些UI功能
         if (eventSystem != null)
         {
             eventSystem.SetSelectedGameObject(buttons[currentIndex].gameObject);
