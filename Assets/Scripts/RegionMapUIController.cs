@@ -22,8 +22,6 @@ public class RegionMapUIController : MonoBehaviour
 
     public RegionNodeUI HoverRegion { get; private set; }
 
-    RegionNodeUI _pendingTarget;
-
     void Awake()
     {
         foreach (var r in allRegions) if (r) r.controller = this;
@@ -41,44 +39,10 @@ public class RegionMapUIController : MonoBehaviour
     public void TryEnter(RegionNodeUI target)
     {
         if (!target || target == currentRegion) return;
-        if (currentRegion != null && !currentRegion.IsNeighborOf(target)) return;
-
-        // 弹出确认面板，而不是立刻扣资源
-        _pendingTarget = target;
-
-        var panel = UIManager.Instance;  // UIManager 负责 PushPanel:contentReference[oaicite:4]{index=4}
-        panel.PushPanel(PanelType.TravelConfirm);
-
-        // 拿到刚压栈的面板实例并传参
-        // 你 UIManager 里有 _panelInstances 字典（内部），这里可通过查找场景获取组件：
-        var confirm = FindObjectOfType<TravelConfirmPanel>(true);
-        if (confirm)
-        {
-            confirm.Setup(
-                target,
-                onConfirm: () => ConfirmTravel(),  // 点击“确认”
-                onCancel: () => { _pendingTarget = null; } // 点击“取消”
-            );
-        }
-    }
-
-    void ConfirmTravel()
-    {
-        if (_pendingTarget == null) return;
-
-        // 再次校验资源
-        if (!_pendingTarget.CanAfford())
-        {
-            StartCoroutine(FlashBorder(_pendingTarget)); // 你原来的不足反馈
-            _pendingTarget = null;
-            return;
-        }
-
-        // 扣减资源 + 进入
-        _pendingTarget.ApplyCost();           // 触发 GameManager 事件，GameUIPanel 会自动刷新:contentReference[oaicite:5]{index=5}
-        currentRegion = _pendingTarget;
-        _pendingTarget = null;
+        if (currentRegion != null && !currentRegion.IsNeighborOf(target)) return; // 只允许相邻
+        currentRegion = target;
         ApplyVisuals();
+        // 如需弹事件面板：UIManager.Instance.PushPanel(PanelType.EventDialog);
     }
 
     void ApplyVisuals()
