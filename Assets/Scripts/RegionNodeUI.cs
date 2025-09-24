@@ -6,17 +6,17 @@ using System.Collections.Generic;
 [RequireComponent(typeof(Image))]
 public class RegionNodeUI : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler, IPointerClickHandler
 {
-    [Header("±êÊ¶")]
+    [Header("ï¿½ï¿½Ê¶")]
     public string regionId;
 
-    // [ÁÚ½ÓÇøÓò] Ïà¹ØµÄ×Ö¶ÎºÍ·½·¨ÒÑ±»ÒÆ³ý
+    // [ï¿½Ú½ï¿½ï¿½ï¿½ï¿½ï¿½] ï¿½ï¿½Øµï¿½ï¿½Ö¶ÎºÍ·ï¿½ï¿½ï¿½ï¿½Ñ±ï¿½ï¿½Æ³ï¿½
 
-    [Header("ÒôÐ§ÉèÖÃ")]
+    [Header("ï¿½ï¿½Ð§ï¿½ï¿½ï¿½ï¿½")]
     [SerializeField] private string hoverSoundName = "RegionHover";
     [SerializeField] private string clickSoundName = "RegionClick";
-    // [ÎÞÐ§µã»÷ÒôÐ§] ×Ö¶ÎÒÑ±»ÒÆ³ý
+    // [ï¿½ï¿½Ð§ï¿½ï¿½ï¿½ï¿½ï¿½Ð§] ï¿½Ö¶ï¿½ï¿½Ñ±ï¿½ï¿½Æ³ï¿½
 
-    // ¿É¿ØÖÆÆ÷×¢Èë
+    // ï¿½É¿ï¿½ï¿½ï¿½ï¿½ï¿½×¢ï¿½ï¿½
     [HideInInspector] public RegionMapUIController controller;
 
     Image _img;
@@ -26,9 +26,9 @@ public class RegionNodeUI : MonoBehaviour, IPointerEnterHandler, IPointerExitHan
         _img = GetComponent<Image>();
     }
 
-    // IsNeighborOf ·½·¨ÒÑ±»ÒÆ³ý
+    // IsNeighborOf ï¿½ï¿½ï¿½ï¿½ï¿½Ñ±ï¿½ï¿½Æ³ï¿½
 
-    // Í³Ò»ÉèÖÃ±³¾°É«£¨¼´ÉèÖÃÍ¼Æ¬×é¼þÑÕÉ«£©
+    // Í³Ò»ï¿½ï¿½ï¿½Ã±ï¿½ï¿½ï¿½É«ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Í¼Æ¬ï¿½ï¿½ï¿½ï¿½ï¿½É«ï¿½ï¿½
     public void SetColor(Color c)
     {
         if (_img) _img.color = c;
@@ -38,7 +38,7 @@ public class RegionNodeUI : MonoBehaviour, IPointerEnterHandler, IPointerExitHan
     {
         controller?.SetHover(this);
 
-        // ²¥·ÅÐüÍ£ÒôÐ§
+        // ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Í£ï¿½ï¿½Ð§
         if (AudioManager.Instance != null && !string.IsNullOrEmpty(hoverSoundName))
         {
             AudioManager.Instance.PlaySFX(hoverSoundName);
@@ -54,17 +54,17 @@ public class RegionNodeUI : MonoBehaviour, IPointerEnterHandler, IPointerExitHan
     {
         if (controller == null) return;
 
-        // Ö»Òªµã»÷µÄ²»ÊÇµ±Ç°ÇøÓò£¬¾ÍÊÓÎªÓÐÐ§µã»÷
+        // Ö»Òªï¿½ï¿½ï¿½ï¿½Ä²ï¿½ï¿½Çµï¿½Ç°ï¿½ï¿½ï¿½ò£¬¾ï¿½ï¿½ï¿½Îªï¿½ï¿½Ð§ï¿½ï¿½ï¿½
         if (this != controller.currentRegion)
         {
-            // ²¥·Å³É¹¦µã»÷ÒôÐ§
+            // ï¿½ï¿½ï¿½Å³É¹ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ð§
             if (AudioManager.Instance != null && !string.IsNullOrEmpty(clickSoundName))
             {
                 AudioManager.Instance.PlaySFX(clickSoundName);
             }
-            // ³¢ÊÔ½øÈëÐÂÇøÓò
+            // ï¿½ï¿½ï¿½Ô½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
             controller.TryEnter(this);
         }
-        // ÎÞÐ§µã»÷µÄÂß¼­ºÍÒôÐ§ÒÑ±»ÍêÈ«ÒÆ³ý
+        // ï¿½ï¿½Ð§ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ß¼ï¿½ï¿½ï¿½ï¿½ï¿½Ð§ï¿½Ñ±ï¿½ï¿½ï¿½È«ï¿½Æ³ï¿½
     }
 }

@@ -1,19 +1,19 @@
 using System;
 using UnityEngine;
 
-// ¹ÜÀíÓÎÏ·µÄºËÐÄÊý¾ÝºÍÂß¼­
+// ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ï·ï¿½Äºï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ýºï¿½ï¿½ß¼ï¿½
 public class GameManager : MonoBehaviour
 {
     public static GameManager Instance { get; private set; }
 
-    [Header("¿ì½øÉèÖÃ")]
+    [Header("ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½")]
     [SerializeField] private int dailyActionPoints = 10;
     [SerializeField] private int dailyHungerLoss = 5;
     [SerializeField] private int dailySanityLoss = 5;
     [SerializeField] private int minHunger = 0;
     [SerializeField] private int minSanity = 0;
 
-    // --- ºËÐÄÓÎÏ·Êý¾Ý£¨Íâ²¿Ö»¶Á£© ---
+    // --- ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ï·ï¿½ï¿½ï¿½Ý£ï¿½ï¿½â²¿Ö»ï¿½ï¿½ï¿½ï¿½ ---
     public int CurrentDay { get; private set; }
     public int ActionPoints { get; private set; }
     public int Health { get; private set; }
@@ -23,15 +23,15 @@ public class GameManager : MonoBehaviour
     public int Collectibles { get; private set; }
     public int Medicine { get; private set; }
 
-    // ×î´óÐÐ¶¯µã£¨¹© UI ¶ÁÈ¡£©
+    // ï¿½ï¿½ï¿½ï¿½Ð¶ï¿½ï¿½ã£¨ï¿½ï¿½ UI ï¿½ï¿½È¡ï¿½ï¿½
     public int MaxActionPoints => dailyActionPoints;
 
-    // --- ÓÎÏ·×´Ì¬ ---
+    // --- ï¿½ï¿½Ï·×´Ì¬ ---
     public bool IsGameOver { get; private set; }
 
-    // --- ÊÂ¼þ ---
+    // --- ï¿½Â¼ï¿½ ---
     public event Action OnStatsChanged;
-    public event Action<int> OnDayChanged; // ÐÂÔö£ºÌìÊý±ä»¯ÊÂ¼þ
+    public event Action<int> OnDayChanged; // ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ä»¯ï¿½Â¼ï¿½
 
     private void Awake()
     {
@@ -63,7 +63,7 @@ public class GameManager : MonoBehaviour
         }
     }
 
-    // ÓÉ GameOverPanel µ÷ÓÃ
+    // ï¿½ï¿½ GameOverPanel ï¿½ï¿½ï¿½ï¿½
     public void RestartGame()
     {
         IsGameOver = false;
@@ -74,11 +74,11 @@ public class GameManager : MonoBehaviour
         }
     }
 
-    // ³õÊ¼»¯ÐÂÓÎÏ·
+    // ï¿½ï¿½Ê¼ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ï·
     public void InitializeNewGame()
     {
         CurrentDay = 1;
-        ActionPoints = dailyActionPoints; // ¼ÙÉèÄúÓÐ dailyActionPoints ±äÁ¿
+        ActionPoints = dailyActionPoints; // ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ dailyActionPoints ï¿½ï¿½ï¿½ï¿½
         Health = 100;
         Hunger = 100;
         Sanity = 100;
@@ -88,7 +88,7 @@ public class GameManager : MonoBehaviour
         IsGameOver = false;
 
         RaiseStatsChanged();
-        // µ±¿ªÊ¼ÐÂÓÎÏ·Ê±£¬Ò²Ó¦¸Ã´¥·¢ÌìÊý±ä»¯ÊÂ¼þ£¬ÒÔÈ·±£ÒôÀÖÕýÈ·²¥·Å
+        // ï¿½ï¿½ï¿½ï¿½Ê¼ï¿½ï¿½ï¿½ï¿½Ï·Ê±ï¿½ï¿½Ò²Ó¦ï¿½Ã´ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ä»¯ï¿½Â¼ï¿½ï¿½ï¿½ï¿½ï¿½È·ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½È·ï¿½ï¿½ï¿½ï¿½
         OnDayChanged?.Invoke(CurrentDay);
     }
 
@@ -99,8 +99,8 @@ public class GameManager : MonoBehaviour
         CurrentDay++;
         ActionPoints = dailyActionPoints;
         
-        // --- ÐÞ¸Äµã ---
-        // Ê¹ÓÃÐòÁÐ»¯µÄ±äÁ¿À´¼õÉÙ¼¢¶öºÍ¾«ÉñÖµ
+        // --- ï¿½Þ¸Äµï¿½ ---
+        // Ê¹ï¿½ï¿½ï¿½ï¿½ï¿½Ð»ï¿½ï¿½Ä±ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ù¼ï¿½ï¿½ï¿½ï¿½Í¾ï¿½ï¿½ï¿½Öµ
         Hunger = Mathf.Max(minHunger, Hunger - dailyHungerLoss);
         Sanity = Mathf.Max(minSanity, Sanity - dailySanityLoss);
         // ------------
@@ -112,13 +112,13 @@ public class GameManager : MonoBehaviour
 
         RaiseStatsChanged();
         
-        // ÔÚÌìÊý¸Ä±äºó£¬Á¢¼´´¥·¢ OnDayChanged ÊÂ¼þ£¬²¢°ÑÐÂµÄÌìÊý´«µÝ³öÈ¥
+        // ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ä±ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ OnDayChanged ï¿½Â¼ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Âµï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ý³ï¿½È¥
         OnDayChanged?.Invoke(CurrentDay);
 
         CheckGameOver();
     }
 
-    // ÏûºÄÐÐ¶¯µã£¨¹©°´Å¥»òÂß¼­µ÷ÓÃ£©
+    // ï¿½ï¿½ï¿½ï¿½ï¿½Ð¶ï¿½ï¿½ã£¨ï¿½ï¿½ï¿½ï¿½Å¥ï¿½ï¿½ï¿½ß¼ï¿½ï¿½ï¿½ï¿½Ã£ï¿½
     public bool TrySpendActionPoint(int cost = 1)
     {
         if (IsGameOver) return false;
@@ -145,47 +145,65 @@ public class GameManager : MonoBehaviour
         IsGameOver = false;
 
         RaiseStatsChanged();
-        // ´Ó´æµµ¼ÓÔØÊ±£¬Ò²Ó¦¸Ã´¥·¢ÌìÊý±ä»¯ÊÂ¼þ
+        // ï¿½Ó´æµµï¿½ï¿½ï¿½ï¿½Ê±ï¿½ï¿½Ò²Ó¦ï¿½Ã´ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ä»¯ï¿½Â¼ï¿½
         OnDayChanged?.Invoke(CurrentDay);
         CheckGameOver();
     }   
 
     /// <summary>
-    /// Ê¹ÓÃÒ©Æ·£¬»Ö¸´20µãÉúÃüÖµ
+    /// Ê¹ï¿½ï¿½Ò©Æ·ï¿½ï¿½ï¿½Ö¸ï¿½20ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Öµ
     /// </summary>
     public void UseMedicine()
     {
         if (Medicine > 0)
         {
             Medicine--;
-            Health = Mathf.Min(Health + 20, 100); // ¼ÙÉè×î´óÖµÎª100
+            Health = Mathf.Min(Health + 20, 100); // ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ÖµÎª100
             RaiseStatsChanged();
         }
     }
 
     /// <summary>
-    /// Ê¹ÓÃÊ³Îï£¬»Ö¸´10µã¼¢¶öÖµ
+    /// Ê¹ï¿½ï¿½Ê³ï¿½ï£¬ï¿½Ö¸ï¿½10ï¿½ã¼¢ï¿½ï¿½Öµ
     /// </summary>
     public void UseFood()
     {
         if (Food > 0)
         {
             Food--;
-            Hunger = Mathf.Min(Hunger + 10, 100); // ¼ÙÉè×î´óÖµÎª100
+            Hunger = Mathf.Min(Hunger + 10, 100); // ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ÖµÎª100
             RaiseStatsChanged();
         }
     }
 
     /// <summary>
-    /// Ê¹ÓÃÊÕ²ØÆ·£¬»Ö¸´10µã¾«ÉñÖµ
+    /// Ê¹ï¿½ï¿½ï¿½Õ²ï¿½Æ·ï¿½ï¿½ï¿½Ö¸ï¿½10ï¿½ã¾«ï¿½ï¿½Öµ
     /// </summary>
     public void UseCollectible()
     {
         if (Collectibles > 0)
         {
             Collectibles--;
-            Sanity = Mathf.Min(Sanity + 10, 100); // ¼ÙÉè×î´óÖµÎª100
+            Sanity = Mathf.Min(Sanity + 10, 100); // ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ÖµÎª100
             RaiseStatsChanged();
         }
+    }
+
+    // ==== ï¿½ï¿½ï¿½ï¿½ï¿½Ö¸ï¿½ï¿½ï¿½Ú£ï¿½ï¿½ï¿½ SaveLoadManager ï¿½ï¿½ï¿½Ã£ï¿½ ====
+    public void ApplySaveData(
+        int health, int hunger, int sanity,
+        int currentDay, int food, int collectibles, int medicine, int actionPoints)
+    {
+        Health = health;
+        Hunger = hunger;
+        Sanity = sanity;
+
+        CurrentDay = currentDay;
+        Food = food;
+        Collectibles = collectibles;
+        Medicine = medicine;
+        ActionPoints = actionPoints;
+
+        RaiseStatsChanged();
     }
 }

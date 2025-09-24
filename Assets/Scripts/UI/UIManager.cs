@@ -1,33 +1,32 @@
-using System.Collections.Generic;
-using System.Linq; // ÐèÒªÒýÈëLinq
+using System.Linq; // ï¿½ï¿½Òªï¿½ï¿½ï¿½ï¿½Linq
 using UnityEngine;
 
-// ÐÂÔöÒ»¸öÃ¶¾ÙÀ´±êÊ¶ËùÓÐÃæ°åÀàÐÍ
+// ï¿½ï¿½ï¿½ï¿½Ò»ï¿½ï¿½Ã¶ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ê¶ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
 public enum PanelType
 {
     MainMenu,
     GameUI,
     PauseMenu,
     EventDialog,
-    Tutorial, // ÐÂÊÖÖ¸ÄÏ
-    Interaction, // Çø¿é½»»¥
-    EventResult, // ÊÂ¼þ½á¹û
-    GameOver // Ê§°ÜÃæ°å
+    Tutorial, // ï¿½ï¿½ï¿½ï¿½Ö¸ï¿½ï¿½
+    Interaction, // ï¿½ï¿½ï¿½é½»ï¿½ï¿½
+    EventResult, // ï¿½Â¼ï¿½ï¿½ï¿½ï¿½
+    GameOver // Ê§ï¿½ï¿½ï¿½ï¿½ï¿½
 }
 
-// UIManager ¸ºÔð¹ÜÀíËùÓÐUIÃæ°åµÄÏÔÊ¾ºÍÒþ²Ø£¬Ê¹ÓÃUI¶ÑÕ»
+// UIManager ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½UIï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ê¾ï¿½ï¿½ï¿½ï¿½ï¿½Ø£ï¿½Ê¹ï¿½ï¿½UIï¿½ï¿½Õ»
 public class UIManager : MonoBehaviour
 {
     public static UIManager Instance { get; private set; }
 
-    [Header("Ãæ°åÉèÖÃ")]
+    [Header("ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½")]
     [SerializeField] private Transform panelParent;
     [SerializeField] private List<BasePanel> panelPrefabs;
     
     private Dictionary<PanelType, BasePanel> _panelInstances = new Dictionary<PanelType, BasePanel>();
     private Stack<BasePanel> _panelStack = new Stack<BasePanel>();
 
-    // ÐÂÔö£º¶¨Òå»ù´¡ÅÅÐòË³ÐòºÍÃ¿¸öÃæ°åÖ®¼äµÄ¼ä¸ô
+    // ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ë³ï¿½ï¿½ï¿½Ã¿ï¿½ï¿½ï¿½ï¿½ï¿½Ö®ï¿½ï¿½Ä¼ï¿½ï¿½
     private const int BASE_SORT_ORDER = 10;
     private const int SORT_ORDER_INCREMENT = 10;
 
@@ -38,7 +37,7 @@ public class UIManager : MonoBehaviour
             Instance = this;
             if (panelParent == null)
             {
-                Debug.LogError("UIManager: Panel Parent Î´ÉèÖÃ£¡", this);
+                Debug.LogError("UIManager: Panel Parent Î´ï¿½ï¿½ï¿½Ã£ï¿½", this);
                 return;
             }
 
@@ -64,12 +63,12 @@ public class UIManager : MonoBehaviour
     {
         if (Input.GetKeyDown(KeyCode.Escape))
         {
-            // Èç¹û¶ÑÕ»ÖÐÓÐ¶à¸öÃæ°å£¬»òÕßÖ»ÓÐÒ»¸ö·ÇGameUIµÄÃæ°å£¬Ôòµ¯³ö
+            // ï¿½ï¿½ï¿½ï¿½ï¿½Õ»ï¿½ï¿½ï¿½Ð¶ï¿½ï¿½ï¿½ï¿½å£¬ï¿½ï¿½ï¿½ï¿½Ö»ï¿½ï¿½Ò»ï¿½ï¿½ï¿½ï¿½GameUIï¿½ï¿½ï¿½ï¿½å£¬ï¿½òµ¯³ï¿½
             if (_panelStack.Count > 1 || (_panelStack.Count == 1 && _panelStack.Peek().PanelType != PanelType.GameUI))
             {
                 PopPanel();
             }
-            // Èç¹ûÖ»Ê£ÏÂGameUI£¬¾Í´ò¿ªÔÝÍ£²Ëµ¥
+            // ï¿½ï¿½ï¿½Ö»Ê£ï¿½ï¿½GameUIï¿½ï¿½ï¿½Í´ï¿½ï¿½ï¿½Í£ï¿½Ëµï¿½
             else if (_panelStack.Count == 1 && _panelStack.Peek().PanelType == PanelType.GameUI)
             {
                 PushPanel(PanelType.PauseMenu);
@@ -77,7 +76,7 @@ public class UIManager : MonoBehaviour
         }
     }
 
-    // ÐÞ¸Ä£ºPushPanel²»ÔÙÒþ²ØÖ®Ç°µÄÃæ°å
+    // ï¿½Þ¸Ä£ï¿½PushPanelï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ö®Ç°ï¿½ï¿½ï¿½ï¿½ï¿½
     public void PushPanel(PanelType panelType)
     {
         if (_panelInstances.TryGetValue(panelType, out BasePanel panelToPush))
@@ -88,7 +87,7 @@ public class UIManager : MonoBehaviour
         }
     }
 
-    // ÐÞ¸Ä£ºPopPanel²»ÔÙÏÔÊ¾ÐÂµÄ¶¥²¿Ãæ°å£¬Ö»¸ºÔðµ¯³öºÍ¸üÐÂÅÅÐò
+    // ï¿½Þ¸Ä£ï¿½PopPanelï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ê¾ï¿½ÂµÄ¶ï¿½ï¿½ï¿½ï¿½ï¿½å£¬Ö»ï¿½ï¿½ï¿½ðµ¯³ï¿½ï¿½Í¸ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
     public void PopPanel()
     {
         if (_panelStack.Count <= 0) return;
@@ -99,11 +98,11 @@ public class UIManager : MonoBehaviour
         UpdatePanelsSortingOrder();
     }
 
-    // ÐÂÔö£ºÒ»¸ö¸¨Öú·½·¨£¬¸ù¾ÝÃæ°åÔÚ¶ÑÕ»ÖÐµÄË³Ðò¸üÐÂÆäCanvasÅÅÐò
+    // ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ò»ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ú¶ï¿½Õ»ï¿½Ðµï¿½Ë³ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Canvasï¿½ï¿½ï¿½ï¿½
     private void UpdatePanelsSortingOrder()
     {
         int currentOrder = BASE_SORT_ORDER;
-        // ÎÒÃÇÐèÒª´ÓÕ»µ×µ½Õ»¶¥±éÀú£¬ËùÒÔÏÈ½«Õ»·´×ª
+        // ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Òªï¿½ï¿½Õ»ï¿½×µï¿½Õ»ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½È½ï¿½Õ»ï¿½ï¿½×ª
         foreach (var panel in _panelStack.Reverse())
         {
             panel.SetSortOrder(currentOrder);
@@ -111,7 +110,7 @@ public class UIManager : MonoBehaviour
         }
     }
 
-    // ¹Ø±ÕËùÓÐÃæ°å£¬È»ºó´ò¿ªÒ»¸öÈ«ÐÂµÄÃæ°å£¨ÓÃÓÚÖ÷²Ëµ¥->ÓÎÏ·½çÃæµÄÇÐ»»£©
+    // ï¿½Ø±ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½å£¬È»ï¿½ï¿½ï¿½Ò»ï¿½ï¿½È«ï¿½Âµï¿½ï¿½ï¿½å£¨ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ëµï¿½->ï¿½ï¿½Ï·ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ð»ï¿½ï¿½ï¿½
     public void ClearAndPushPanel(PanelType panelType)
     {
         while (_panelStack.Count > 0)

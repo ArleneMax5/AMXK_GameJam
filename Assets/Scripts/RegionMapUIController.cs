@@ -2,26 +2,31 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 
-// ÇøÓòµØÍ¼ UI ¿ØÖÆÆ÷
+// ï¿½ï¿½ï¿½ï¿½ï¿½Í¼ UI ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
 public class RegionMapUIController : MonoBehaviour
 {
-    [Header("ÇøÓò¼¯ºÏÓëµ±Ç°ÇøÓò")]
+    [Header("ï¿½ï¿½ï¿½ò¼¯ºï¿½ï¿½ëµ±Ç°ï¿½ï¿½ï¿½ï¿½")]
     public List<RegionNodeUI> allRegions = new List<RegionNodeUI>();
     public RegionNodeUI currentRegion;
 
-    [Header("ÅäÉ«")]
-    public Color currentColor = new Color(0.35f, 0.75f, 1f, 1f); // µ±Ç°
-    public Color hoverColor = new Color(1f, 0.85f, 0.30f, 1f); // ÐüÍ£
-    public Color dimColor = new Color(0.55f, 0.55f, 0.55f, 0.6f); // ÆäÓà±ä°µ
+    [Header("ï¿½ï¿½ï¿½ï¿½ï¿½É«ï¿½ï¿½ï¿½ï¿½Í£ï¿½ï¿½ï¿½Ä±ï¿½ï¿½ï¿½ä£©")]
+    public Color currentFillColor = new Color(0.35f, 0.75f, 1f, 1f); // ï¿½ï¿½Ç°
+    public Color dimFillColor = new Color(0.55f, 0.55f, 0.55f, 0.6f); // ï¿½ï¿½ï¿½ï¿½
 
-    [Header("Ö»ÏÔÊ¾µ±Ç°ÓëÐüÍ££¬ÆäÓàÒþ²Ø")]
+    [Header("ï¿½ß¿ï¿½ï¿½ï¿½É«")]
+    public Color defaultBorderColor = new Color(1f, 1f, 1f, 0.35f);  // ï¿½ï¿½Ì¬ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
+    public Color hoverBorderColor = new Color(1f, 0.85f, 0.1f, 1f); // ï¿½ï¿½Í£ï¿½ï¿½ï¿½Æ£ï¿½
+    public bool highlightCurrentBorder = true;
+    public Color currentBorderColor = new Color(1f, 0.95f, 0.2f, 1f);
+
+    [Header("ï¿½ï¿½ï¿½ï¿½Ê¾ï¿½ï¿½Ç°+ï¿½ï¿½Í£ï¿½ï¿½ï¿½ï¿½Ñ¡ï¿½ï¿½")]
     public bool onlyShowCurrentAndHover = false;
 
     public RegionNodeUI HoverRegion { get; private set; }
 
     void Awake()
     {
-        // ×¢Èë controller ÒýÓÃ
+        // ×¢ï¿½ï¿½ controller ï¿½ï¿½ï¿½ï¿½
         foreach (var r in allRegions)
         {
             if (!r) continue;
@@ -45,9 +50,9 @@ public class RegionMapUIController : MonoBehaviour
     {
         if (!target) return;
 
-        // ¼ò»¯Âß¼­£ºÖ»·ÀÖ¹ÖØ¸´µã»÷µ±Ç°ÇøÓò
+        // ï¿½ï¿½ï¿½ß¼ï¿½ï¿½ï¿½Ö»ï¿½ï¿½Ö¹ï¿½Ø¸ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ç°ï¿½ï¿½ï¿½ï¿½
         if (target == currentRegion) return;
-        // ÒÆ³ýÁË¶ÔÏàÁÚÇøÓòµÄ¼ì²é
+        // ï¿½Æ³ï¿½ï¿½Ë¶ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ä¼ï¿½ï¿½
 
         currentRegion = target;
         ApplyColors();
@@ -63,7 +68,7 @@ public class RegionMapUIController : MonoBehaviour
             {
                 bool visible = (node == currentRegion) || (node == HoverRegion);
                 SetVisible(node, visible);
-                if (!visible) continue; // ²»¿É¼û¾Í²»ÔÙ¸ÄÑÕÉ«
+                if (!visible) continue; // ï¿½ï¿½ï¿½É¼ï¿½ï¿½Í²ï¿½ï¿½Ù¸ï¿½ï¿½ï¿½É«
             }
 
             if (node == currentRegion)
