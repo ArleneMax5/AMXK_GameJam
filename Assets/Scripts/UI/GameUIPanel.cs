@@ -19,7 +19,7 @@ public class GameUIPanel : BasePanel
     [Header("行动点数显示")]
     [SerializeField] private ActionPointDisplay actionPointDisplay;
 
-    // 当这个面板被激活时，它就开始“收听”广播
+    // 当这个面板被激活时，它就开始"收听"广播     
     private void OnEnable()
     {
         // 确保GameManager已经存在
@@ -32,7 +32,7 @@ public class GameUIPanel : BasePanel
         }
     }
 
-    // 当这个面板被隐藏时，它就停止“收听”，以防出错
+    // 当这个面板被隐藏时，它就停止"收听"，以防出错
     private void OnDisable()
     {
         // 确保GameManager实例还存在（防止在游戏退出时出错）
@@ -41,6 +41,17 @@ public class GameUIPanel : BasePanel
             // 取消订阅
             GameManager.Instance.OnStatsChanged -= UpdateDisplay;
         }
+    }
+
+    // 重写 Update 方法，当游戏结束时禁用键盘导航
+    protected override void Update()
+    {
+        if (GameManager.Instance != null && GameManager.Instance.IsGameOver)
+        {
+            return; // 游戏结束时不处理键盘输入
+        }
+        
+        base.Update(); // 调用基类的 Update 方法
     }
 
     // 这个方法现在由事件自动调用，不再需要从外部手动调用
@@ -52,11 +63,28 @@ public class GameUIPanel : BasePanel
         if (hungerSlider != null) hungerSlider.value = gm.Hunger;
         if (sanitySlider != null) sanitySlider.value = gm.Sanity;
 
-        if (dayText != null) dayText.text = $"天数: {gm.CurrentDay}";
+        if (dayText != null) dayText.text = $"{gm.CurrentDay}";
         if (foodText != null) foodText.text = $"{gm.Food}";
         if (collectiblesText != null) collectiblesText.text = $"{gm.Collectibles}";
         if (medicineText != null) medicineText.text = $"{gm.Medicine}";
 
-        if (actionPointDisplay != null) actionPointDisplay.UpdatePoints(gm.ActionPoints);
+        if (actionPointDisplay != null) actionPointDisplay.Refresh(gm.ActionPoints, gm.MaxActionPoints);
     }
+
+    #region 物品使用按钮接口
+    public void OnClickUseMedicine()
+    {
+        GameManager.Instance?.UseMedicine();
+    }
+
+    public void OnClickUseFood()
+    {
+        GameManager.Instance?.UseFood();
+    }
+
+    public void OnClickUseCollectible()
+    {
+        GameManager.Instance?.UseCollectible();
+    }
+    #endregion
 }

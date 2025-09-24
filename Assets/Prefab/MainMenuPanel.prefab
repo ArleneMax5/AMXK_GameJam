@@ -552,6 +552,34 @@ PrefabInstance:
       propertyPath: floatDuration
       value: 0.5
       objectReference: {fileID: 0}
+    - target: {fileID: 1014176257150428797, guid: 95a86928a3e0d644c921ded2a6ee6e9f, type: 3}
+      propertyPath: OnActivated.m_PersistentCalls.m_Calls.Array.size
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 1014176257150428797, guid: 95a86928a3e0d644c921ded2a6ee6e9f, type: 3}
+      propertyPath: OnActivated.m_PersistentCalls.m_Calls.Array.data[0].m_Mode
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 1014176257150428797, guid: 95a86928a3e0d644c921ded2a6ee6e9f, type: 3}
+      propertyPath: OnActivated.m_PersistentCalls.m_Calls.Array.data[0].m_Target
+      value: 
+      objectReference: {fileID: 4425940726274067014}
+    - target: {fileID: 1014176257150428797, guid: 95a86928a3e0d644c921ded2a6ee6e9f, type: 3}
+      propertyPath: OnActivated.m_PersistentCalls.m_Calls.Array.data[0].m_CallState
+      value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 1014176257150428797, guid: 95a86928a3e0d644c921ded2a6ee6e9f, type: 3}
+      propertyPath: OnActivated.m_PersistentCalls.m_Calls.Array.data[0].m_MethodName
+      value: Trigger
+      objectReference: {fileID: 0}
+    - target: {fileID: 1014176257150428797, guid: 95a86928a3e0d644c921ded2a6ee6e9f, type: 3}
+      propertyPath: OnActivated.m_PersistentCalls.m_Calls.Array.data[0].m_TargetAssemblyTypeName
+      value: UIEventTrigger, Assembly-CSharp
+      objectReference: {fileID: 0}
+    - target: {fileID: 1014176257150428797, guid: 95a86928a3e0d644c921ded2a6ee6e9f, type: 3}
+      propertyPath: OnActivated.m_PersistentCalls.m_Calls.Array.data[0].m_Arguments.m_ObjectArgumentAssemblyTypeName
+      value: UnityEngine.Object, UnityEngine
+      objectReference: {fileID: 0}
     - target: {fileID: 1425643577046757376, guid: 95a86928a3e0d644c921ded2a6ee6e9f, type: 3}
       propertyPath: m_AnchorMax.y
       value: 0

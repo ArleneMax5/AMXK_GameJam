@@ -1,8 +1,24 @@
 using UnityEngine;
 using System.Collections.Generic;
 using UnityEngine.EventSystems;
-
 // 总结：这个 BasePanel 类实现了统一的键盘导航、鼠标悬停选择和点击确认按钮的逻辑。
+
+// public enum PanelType
+// {
+//     MainMenu,
+//     GameUI,
+//     PauseMenu,
+//     EventDialog,
+//     Tutorial,
+//     // 新增指定
+//     Interaction,
+//     // 事件交互
+//     EventResult,
+//     // 新增失败面板
+//     GameOver
+// }
+
+
 [RequireComponent(typeof(Canvas))] // 强制要求每个面板都有一个Canvas组件
 public class BasePanel : MonoBehaviour
 {

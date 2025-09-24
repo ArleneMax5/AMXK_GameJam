@@ -122,6 +122,118 @@ NavMeshSettings:
     debug:
       m_Flags: 0
   m_NavMeshData: {fileID: 0}
+--- !u!1 &18966487
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 18966490}
+  - component: {fileID: 18966489}
+  - component: {fileID: 18966488}
+  m_Layer: 0
+  m_Name: AudioManager
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &18966488
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 18966487}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 55227f1bf28d5474dae4aa5510dd6cac, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  ambientWindSound: WindLoop
+  startMusic: GameStartMusic
+  day1_2_Music: Day1_2_BGM
+  day3_Plus_Music: Day3_Plus_BGM
+  fadeTime: 2
+--- !u!114 &18966489
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 18966487}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 27f5970de9185164ab9b7fde45fed38d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  musicSource: {fileID: 0}
+  sfxSource: {fileID: 0}
+  ambienceSource: {fileID: 0}
+  backgroundMusic:
+  - name: GameStartMusic
+    clip: {fileID: 8300000, guid: e426297e72ad58f4ea28069206413169, type: 3}
+    volume: 1
+    pitch: 1
+    loop: 0
+  - name: Day1_2_BGM
+    clip: {fileID: 8300000, guid: a454cd13ad079ad49a9d8be3985b9a64, type: 3}
+    volume: 1
+    pitch: 1
+    loop: 1
+  - name: Day3_Plus_BGM
+    clip: {fileID: 8300000, guid: 83ec741b07631d84ab0f09c0261ae522, type: 3}
+    volume: 1
+    pitch: 1
+    loop: 1
+  soundEffects:
+  - name: ButtonClick
+    clip: {fileID: 8300000, guid: bcc7753f4a1a5624aab5f0f7e0436c23, type: 3}
+    volume: 1
+    pitch: 1
+    loop: 0
+  - name: ButtonHover
+    clip: {fileID: 8300000, guid: d07dd7b17261445448203aba262eac3b, type: 3}
+    volume: 1
+    pitch: 1
+    loop: 0
+  - name: RegionClick
+    clip: {fileID: 8300000, guid: 08257f57050c81545a3e53a7a429cb69, type: 3}
+    volume: 1
+    pitch: 1
+    loop: 0
+  - name: RegionHover
+    clip: {fileID: 8300000, guid: d07dd7b17261445448203aba262eac3b, type: 3}
+    volume: 1
+    pitch: 1
+    loop: 0
+  ambientSounds:
+  - name: WindLoop
+    clip: {fileID: 8300000, guid: 8eb13fe9e70e37b4f9a285f8f5630ee5, type: 3}
+    volume: 0.5
+    pitch: 1
+    loop: 0
+  masterVolume: 1
+  musicVolume: 0.7
+  sfxVolume: 1
+  ambienceVolume: 0.5
+--- !u!4 &18966490
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 18966487}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 759.73663, y: 596.38275, z: 4.37511}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &375876724
 GameObject:
   m_ObjectHideFlags: 0
@@ -583,6 +695,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e05ba53981411944f84e24e2028cb0b5, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  dailyActionPoints: 10
+  dailyHungerLoss: 30
+  dailySanityLoss: 30
+  minHunger: 0
+  minSanity: 0
 --- !u!4 &1559651743
 Transform:
   m_ObjectHideFlags: 0
@@ -633,6 +750,7 @@ MonoBehaviour:
   - {fileID: 3698530477919525637, guid: dcb019eed4e71bb4bb774aaaa92c2f0f, type: 3}
   - {fileID: 1028833364910995008, guid: a15d2a6e29f86584e9c67a9138e29125, type: 3}
   - {fileID: 2490007521744753605, guid: fb187a250e6f30348b3737dd159ca88b, type: 3}
+  - {fileID: 1727918394292997225, guid: f581b60b2fa4a5249b38d40c63f6d50c, type: 3}
 --- !u!4 &1612008820
 Transform:
   m_ObjectHideFlags: 0
@@ -659,3 +777,4 @@ SceneRoots:
   - {fileID: 1612008820}
   - {fileID: 1559651743}
   - {fileID: 696266629}
+  - {fileID: 18966490}

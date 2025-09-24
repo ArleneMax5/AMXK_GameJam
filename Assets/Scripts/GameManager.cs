@@ -6,8 +6,14 @@ public class GameManager : MonoBehaviour
 {
     public static GameManager Instance { get; private set; }
 
-    // --- 核心游戏数据 ---
-    // 使用属性（Property）来封装数据，外部只能读取，只能由GameManager内部修改
+    [Header("快进设置")]
+    [SerializeField] private int dailyActionPoints = 10;
+    [SerializeField] private int dailyHungerLoss = 5;
+    [SerializeField] private int dailySanityLoss = 5;
+    [SerializeField] private int minHunger = 0;
+    [SerializeField] private int minSanity = 0;
+
+    // --- 核心游戏数据（外部只读） ---
     public int CurrentDay { get; private set; }
     public int ActionPoints { get; private set; }
     public int Health { get; private set; }
@@ -17,15 +23,22 @@ public class GameManager : MonoBehaviour
     public int Collectibles { get; private set; }
     public int Medicine { get; private set; }
 
-    // --- 事件：当任何数据发生变化时，就发出这个广播 ---
+    // 最大行动点（供 UI 读取）
+    public int MaxActionPoints => dailyActionPoints;
+
+    // --- 游戏状态 ---
+    public bool IsGameOver { get; private set; }
+
+    // --- 事件 ---
     public event Action OnStatsChanged;
+    public event Action<int> OnDayChanged; // 新增：天数变化事件
 
     private void Awake()
     {
         if (Instance == null)
         {
             Instance = this;
-            DontDestroyOnLoad(gameObject); // 确保GameManager在切换场景时不会被销毁
+            DontDestroyOnLoad(gameObject);
         }
         else
         {
@@ -33,47 +46,146 @@ public class GameManager : MonoBehaviour
         }
     }
 
-    // 当开始一个新游戏时，由 GameEventManager 调用
+    private void RaiseStatsChanged() => OnStatsChanged?.Invoke();
+
+    private void CheckGameOver()
+    {
+        if (!IsGameOver)
+        {
+            if (Health <= 0 || Hunger <= 0 || Sanity <= 0)
+            {
+                IsGameOver = true;
+                if (UIManager.Instance != null)
+                {
+                    UIManager.Instance.PushPanel(PanelType.GameOver);
+                }
+            }
+        }
+    }
+
+    // 由 GameOverPanel 调用
+    public void RestartGame()
+    {
+        IsGameOver = false;
+        InitializeNewGame();
+        if (UIManager.Instance != null)
+        {
+            UIManager.Instance.ClearAndPushPanel(PanelType.MainMenu);
+        }
+    }
+
+    // 初始化新游戏
     public void InitializeNewGame()
     {
-        // 初始化所有数据
         CurrentDay = 1;
-        ActionPoints = 8; // 假设每天有8个行动点
-        Health = 100;   
+        ActionPoints = dailyActionPoints; // 假设您有 dailyActionPoints 变量
+        Health = 100;
         Hunger = 100;
         Sanity = 100;
         Food = 0;
         Collectibles = 0;
         Medicine = 0;
+        IsGameOver = false;
 
-        // 初始化完成后，立即广播一次，让UI显示初始状态
-        OnStatsChanged?.Invoke();
+        RaiseStatsChanged();
+        // 当开始新游戏时，也应该触发天数变化事件，以确保音乐正确播放
+        OnDayChanged?.Invoke(CurrentDay);
     }
 
-    // --- 核心逻辑方法示例 ---
-
-    public void EndDay()
+    public void FastForwardDay()
     {
+        if (IsGameOver) return;
+
         CurrentDay++;
-        ActionPoints = 8; // 重置行动点
-        Hunger -= 1;   // 每天消耗饥饿值
+        ActionPoints = dailyActionPoints;
+        
+        // --- 修改点 ---
+        // 使用序列化的变量来减少饥饿和精神值
+        Hunger = Mathf.Max(minHunger, Hunger - dailyHungerLoss);
+        Sanity = Mathf.Max(minSanity, Sanity - dailySanityLoss);
+        // ------------
 
-        // 数据变化后，广播通知
-        OnStatsChanged?.Invoke();
+        if (AudioManager.Instance != null)
+        {
+            AudioManager.Instance.PlaySFX("FastForward");
+        }
+
+        RaiseStatsChanged();
+        
+        // 在天数改变后，立即触发 OnDayChanged 事件，并把新的天数传递出去
+        OnDayChanged?.Invoke(CurrentDay);
+
+        CheckGameOver();
     }
 
-    public void UseActionPoints(int amount)
+    // 消耗行动点（供按钮或逻辑调用）
+    public bool TrySpendActionPoint(int cost = 1)
     {
-        if (ActionPoints >= amount)
+        if (IsGameOver) return false;
+        if (cost <= 0) return true;
+        if (ActionPoints < cost) return false;
+
+        ActionPoints -= cost;
+        RaiseStatsChanged();
+        return true;
+    }
+
+    public void ApplySaveData(
+        int health, int hunger, int sanity,
+        int currentDay, int food, int collectibles, int medicine, int actionPoints)
+    {
+        Health = health;
+        Hunger = hunger;
+        Sanity = sanity;
+        CurrentDay = currentDay;
+        Food = food;
+        Collectibles = collectibles;
+        Medicine = medicine;
+        ActionPoints = actionPoints;
+        IsGameOver = false;
+
+        RaiseStatsChanged();
+        // 从存档加载时，也应该触发天数变化事件
+        OnDayChanged?.Invoke(CurrentDay);
+        CheckGameOver();
+    }   
+
+    /// <summary>
+    /// 使用药品，恢复20点生命值
+    /// </summary>
+    public void UseMedicine()
+    {
+        if (Medicine > 0)
         {
-            ActionPoints -= amount;
-            OnStatsChanged?.Invoke();
+            Medicine--;
+            Health = Mathf.Min(Health + 20, 100); // 假设最大值为100
+            RaiseStatsChanged();
         }
     }
 
-    public void AddFood(int amount)
+    /// <summary>
+    /// 使用食物，恢复10点饥饿值
+    /// </summary>
+    public void UseFood()
     {
-        Food += amount;
-        OnStatsChanged?.Invoke();
+        if (Food > 0)
+        {
+            Food--;
+            Hunger = Mathf.Min(Hunger + 10, 100); // 假设最大值为100
+            RaiseStatsChanged();
+        }
+    }
+
+    /// <summary>
+    /// 使用收藏品，恢复10点精神值
+    /// </summary>
+    public void UseCollectible()
+    {
+        if (Collectibles > 0)
+        {
+            Collectibles--;
+            Sanity = Mathf.Min(Sanity + 10, 100); // 假设最大值为100
+            RaiseStatsChanged();
+        }
     }
 }

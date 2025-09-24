@@ -371,6 +371,14 @@ PrefabInstance:
       propertyPath: m_Name
       value: button_4
       objectReference: {fileID: 0}
+    - target: {fileID: 1014176257150428797, guid: 95a86928a3e0d644c921ded2a6ee6e9f, type: 3}
+      propertyPath: floatDistance
+      value: 20
+      objectReference: {fileID: 0}
+    - target: {fileID: 1014176257150428797, guid: 95a86928a3e0d644c921ded2a6ee6e9f, type: 3}
+      propertyPath: floatDuration
+      value: 0.5
+      objectReference: {fileID: 0}
     - target: {fileID: 1425643577046757376, guid: 95a86928a3e0d644c921ded2a6ee6e9f, type: 3}
       propertyPath: m_AnchorMax.y
       value: 0
@@ -556,6 +564,14 @@ PrefabInstance:
     - target: {fileID: 679769235526925381, guid: 95a86928a3e0d644c921ded2a6ee6e9f, type: 3}
       propertyPath: m_Name
       value: button_6
+      objectReference: {fileID: 0}
+    - target: {fileID: 1014176257150428797, guid: 95a86928a3e0d644c921ded2a6ee6e9f, type: 3}
+      propertyPath: floatDistance
+      value: 20
+      objectReference: {fileID: 0}
+    - target: {fileID: 1014176257150428797, guid: 95a86928a3e0d644c921ded2a6ee6e9f, type: 3}
+      propertyPath: floatDuration
+      value: 0.5
       objectReference: {fileID: 0}
     - target: {fileID: 1014176257150428797, guid: 95a86928a3e0d644c921ded2a6ee6e9f, type: 3}
       propertyPath: OnActivated.m_PersistentCalls.m_Calls.Array.size
@@ -771,6 +787,14 @@ PrefabInstance:
       propertyPath: m_Name
       value: button_2
       objectReference: {fileID: 0}
+    - target: {fileID: 1014176257150428797, guid: 95a86928a3e0d644c921ded2a6ee6e9f, type: 3}
+      propertyPath: floatDistance
+      value: 20
+      objectReference: {fileID: 0}
+    - target: {fileID: 1014176257150428797, guid: 95a86928a3e0d644c921ded2a6ee6e9f, type: 3}
+      propertyPath: floatDuration
+      value: 0.5
+      objectReference: {fileID: 0}
     - target: {fileID: 1425643577046757376, guid: 95a86928a3e0d644c921ded2a6ee6e9f, type: 3}
       propertyPath: m_AnchorMax.y
       value: 0
@@ -957,6 +981,14 @@ PrefabInstance:
       propertyPath: m_Name
       value: button_3
       objectReference: {fileID: 0}
+    - target: {fileID: 1014176257150428797, guid: 95a86928a3e0d644c921ded2a6ee6e9f, type: 3}
+      propertyPath: floatDistance
+      value: 20
+      objectReference: {fileID: 0}
+    - target: {fileID: 1014176257150428797, guid: 95a86928a3e0d644c921ded2a6ee6e9f, type: 3}
+      propertyPath: floatDuration
+      value: 0.5
+      objectReference: {fileID: 0}
     - target: {fileID: 1425643577046757376, guid: 95a86928a3e0d644c921ded2a6ee6e9f, type: 3}
       propertyPath: m_AnchorMax.y
       value: 0
@@ -1142,6 +1174,14 @@ PrefabInstance:
     - target: {fileID: 679769235526925381, guid: 95a86928a3e0d644c921ded2a6ee6e9f, type: 3}
       propertyPath: m_Name
       value: button_5
+      objectReference: {fileID: 0}
+    - target: {fileID: 1014176257150428797, guid: 95a86928a3e0d644c921ded2a6ee6e9f, type: 3}
+      propertyPath: floatDistance
+      value: 20
+      objectReference: {fileID: 0}
+    - target: {fileID: 1014176257150428797, guid: 95a86928a3e0d644c921ded2a6ee6e9f, type: 3}
+      propertyPath: floatDuration
+      value: 0.5
       objectReference: {fileID: 0}
     - target: {fileID: 1425643577046757376, guid: 95a86928a3e0d644c921ded2a6ee6e9f, type: 3}
       propertyPath: m_AnchorMax.y
@@ -1340,6 +1380,14 @@ PrefabInstance:
     - target: {fileID: 1014176257150428797, guid: 95a86928a3e0d644c921ded2a6ee6e9f, type: 3}
       propertyPath: glowColor.r
       value: 0.17957835
+      objectReference: {fileID: 0}
+    - target: {fileID: 1014176257150428797, guid: 95a86928a3e0d644c921ded2a6ee6e9f, type: 3}
+      propertyPath: floatDistance
+      value: 20
+      objectReference: {fileID: 0}
+    - target: {fileID: 1014176257150428797, guid: 95a86928a3e0d644c921ded2a6ee6e9f, type: 3}
+      propertyPath: floatDuration
+      value: 0.5
       objectReference: {fileID: 0}
     - target: {fileID: 1014176257150428797, guid: 95a86928a3e0d644c921ded2a6ee6e9f, type: 3}
       propertyPath: OnActivated.m_PersistentCalls.m_Calls.Array.size
