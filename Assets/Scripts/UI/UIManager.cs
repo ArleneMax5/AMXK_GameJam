@@ -11,7 +11,8 @@ public enum PanelType
     EventDialog,
     Tutorial, // 新手指南
     Interaction, // 区块交互
-    EventResult // 事件结果
+    EventResult, // 事件结果
+        TravelConfirm   // ← 新增
 }
 
 // UIManager 负责管理所有UI面板的显示和隐藏，使用UI堆栈

@@ -1,6 +1,5 @@
 using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.UI;
 
 public class RegionMapUIController : MonoBehaviour
 {
@@ -8,81 +7,107 @@ public class RegionMapUIController : MonoBehaviour
     public List<RegionNodeUI> allRegions = new List<RegionNodeUI>();
     public RegionNodeUI currentRegion;
 
-    [Header("配色")]
-    public Color currentColor = new Color(0.35f, 0.75f, 1f, 1f); // 当前
-    public Color hoverColor = new Color(1f, 0.85f, 0.30f, 1f); // 悬停
-    public Color dimColor = new Color(0.55f, 0.55f, 0.55f, 0.6f); // 其余变暗
+    [Header("填充配色（悬停不改变填充）")]
+    public Color currentFillColor = new Color(0.35f, 0.75f, 1f, 1f); // 当前
+    public Color dimFillColor = new Color(0.55f, 0.55f, 0.55f, 0.6f); // 其余
 
-    [Header("只显示当前与悬停，其余隐藏")]
+    [Header("边框配色")]
+    public Color defaultBorderColor = new Color(1f, 1f, 1f, 0.35f);  // 常态（淡）
+    public Color hoverBorderColor = new Color(1f, 0.85f, 0.1f, 1f); // 悬停（黄）
+    public bool highlightCurrentBorder = true;
+    public Color currentBorderColor = new Color(1f, 0.95f, 0.2f, 1f);
+
+    [Header("仅显示当前+悬停（可选）")]
     public bool onlyShowCurrentAndHover = false;
 
     public RegionNodeUI HoverRegion { get; private set; }
 
+    RegionNodeUI _pendingTarget;
+
     void Awake()
     {
-        // 注入 controller 引用
-        foreach (var r in allRegions)
-        {
-            if (!r) continue;
-            r.controller = this;
-        }
+        foreach (var r in allRegions) if (r) r.controller = this;
     }
 
-    void OnEnable()
-    {
-        ApplyColors();
-    }
+    void OnEnable() => ApplyVisuals();
 
     public void SetHover(RegionNodeUI region)
     {
         if (HoverRegion == region) return;
         HoverRegion = region;
-        ApplyColors();
+        ApplyVisuals();
     }
 
     public void TryEnter(RegionNodeUI target)
     {
-        if (!target) return;
-
-        // 只能点击进入相邻区域；点击自身则忽略
-        if (target == currentRegion) return;
+        if (!target || target == currentRegion) return;
         if (currentRegion != null && !currentRegion.IsNeighborOf(target)) return;
 
-        currentRegion = target;
-        ApplyColors();
+        // 弹出确认面板，而不是立刻扣资源
+        _pendingTarget = target;
+
+        var panel = UIManager.Instance;  // UIManager 负责 PushPanel:contentReference[oaicite:4]{index=4}
+        panel.PushPanel(PanelType.TravelConfirm);
+
+        // 拿到刚压栈的面板实例并传参
+        // 你 UIManager 里有 _panelInstances 字典（内部），这里可通过查找场景获取组件：
+        var confirm = FindObjectOfType<TravelConfirmPanel>(true);
+        if (confirm)
+        {
+            confirm.Setup(
+                target,
+                onConfirm: () => ConfirmTravel(),  // 点击“确认”
+                onCancel: () => { _pendingTarget = null; } // 点击“取消”
+            );
+        }
     }
 
-    void ApplyColors()
+    void ConfirmTravel()
+    {
+        if (_pendingTarget == null) return;
+
+        // 再次校验资源
+        if (!_pendingTarget.CanAfford())
+        {
+            StartCoroutine(FlashBorder(_pendingTarget)); // 你原来的不足反馈
+            _pendingTarget = null;
+            return;
+        }
+
+        // 扣减资源 + 进入
+        _pendingTarget.ApplyCost();           // 触发 GameManager 事件，GameUIPanel 会自动刷新:contentReference[oaicite:5]{index=5}
+        currentRegion = _pendingTarget;
+        _pendingTarget = null;
+        ApplyVisuals();
+    }
+
+    void ApplyVisuals()
     {
         foreach (var node in allRegions)
         {
             if (!node) continue;
 
-            if (onlyShowCurrentAndHover)
-            {
-                bool visible = (node == currentRegion) || (node == HoverRegion);
-                SetVisible(node, visible);
-                if (!visible) continue; // 不可见就不再改颜色
-            }
+            // 显隐
+            bool visible = !onlyShowCurrentAndHover || node == currentRegion || node == HoverRegion;
+            node.SetVisible(visible);
+            if (!visible) continue;
 
-            if (node == currentRegion)
+            // 填充：当前高亮，其余变暗（悬停不变填充）
+            node.SetFillColor(node == currentRegion ? currentFillColor : dimFillColor);
+
+            // 边框：默认=淡色；悬停=黄；当前可选高亮
+            if (node == HoverRegion)
             {
-                node.SetColor(currentColor);
+                node.SetBorderColor(hoverBorderColor);
             }
-            else if (node == HoverRegion)
+            else if (highlightCurrentBorder && node == currentRegion)
             {
-                node.SetColor(hoverColor);
+                node.SetBorderColor(currentBorderColor);
             }
             else
             {
-                node.SetColor(dimColor);
+                node.SetBorderColor(defaultBorderColor);
             }
         }
-    }
-
-    void SetVisible(RegionNodeUI node, bool visible)
-    {
-        var g = node.GetComponent<Graphic>();
-        if (g) g.enabled = visible;
     }
 }

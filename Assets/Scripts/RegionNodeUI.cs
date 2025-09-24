@@ -3,49 +3,58 @@ using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
 
-[RequireComponent(typeof(Image))]
+[System.Serializable]
+public struct RegionCost
+{
+    public int action, food, sanity, health;
+}
+
+public enum RegionType { 安全区_田地, 危险区_森林, 危险区_灾后废墟, 中危险区_灌木, 中危险区_养殖区, 营地休息 }
+
 public class RegionNodeUI : MonoBehaviour,
     IPointerEnterHandler, IPointerExitHandler, IPointerClickHandler
 {
-    [Header("标识")]
-    public string regionId;
 
-    [Header("邻接区域（只能点击这些）")]
+
+    [Header("Refs")]
+    public Image fillImage;    // 填充图（必须）
+    public Image borderImage;  // 边框图（必须，Raycast Target 关）
+
+    [Header("标识与邻接")]
+    public string regionId;
     public List<RegionNodeUI> neighbors = new List<RegionNodeUI>();
 
-    // 由控制器注入
+    [Header("前往该区块的消耗/信息")]
+    public RegionType regionType;
+    public RegionCost travelCost;
+    [TextArea] public string regionDesc;      // 区域说明（表格右侧描述）
+    [TextArea] public string rewardPreview;   // “可获得物资”的提示（例如：食物2 / 医疗1 …）
+
+    // 可选：资源不够是否禁止进入
+    public bool blockIfInsufficient = true;
+
     [HideInInspector] public RegionMapUIController controller;
 
-    Image _img;
-
-    void Awake()
+    void Reset()
     {
-        _img = GetComponent<Image>();
+        // 方便拖脚本时自动找子节点
+        if (!fillImage) fillImage = transform.Find("Fill")?.GetComponent<Image>();
+        if (!borderImage) borderImage = transform.Find("Border")?.GetComponent<Image>();
     }
 
     public bool IsNeighborOf(RegionNodeUI other) => neighbors.Contains(other);
 
-    // 统一设置本区域（及额外图片）的颜色
-    public void SetColor(Color c)
+    // —— 供控制器调用的视觉接口 ——
+    public void SetFillColor(Color c) { if (fillImage) fillImage.color = c; }
+    public void SetBorderColor(Color c) { if (borderImage) borderImage.color = c; }
+    public void SetVisible(bool on)
     {
-        if (_img) _img.color = c;
-        
+        if (fillImage) fillImage.enabled = on;
+        if (borderImage) borderImage.enabled = on;
     }
 
-    public void OnPointerEnter(PointerEventData eventData)
-    {
-        controller?.SetHover(this);
-    }
-
-    public void OnPointerExit(PointerEventData eventData)
-    {
-        // 当鼠标离开且没有进入别的区域时清空悬停
-        if (controller && controller.HoverRegion == this)
-            controller.SetHover(null);
-    }
-
-    public void OnPointerClick(PointerEventData eventData)
-    {
-        controller?.TryEnter(this);
-    }
+    // —— 悬停/点击事件 ——
+    public void OnPointerEnter(PointerEventData e) { controller?.SetHover(this); }
+    public void OnPointerExit(PointerEventData e) { if (controller?.HoverRegion == this) controller.SetHover(null); }
+    public void OnPointerClick(PointerEventData e) { controller?.TryEnter(this); }
 }
