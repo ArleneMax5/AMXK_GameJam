@@ -2,33 +2,83 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 
-// 管理行动点数
 public class ActionPointDisplay : MonoBehaviour
 {
-    [Header("UI 元素")]
-    [SerializeField] private List<Image> pointImages;
+    [Header("容器 (放置所有点)")]
+    [SerializeField] private Transform container;
 
-    [Header("颜色设置")]
-    [SerializeField] private Color filledColor = Color.yellow;
-    [SerializeField] private Color emptyColor = Color.black;
+    [Header("点的预制 (必须带 Image)")]
+    [SerializeField] private Image pointPrefab;
 
-    /// <summary>
-    /// 更新行动点数的显示
-    /// </summary>
-    /// <param name="currentPoints">当前的行动点数</param>
-    public void UpdatePoints(int currentPoints)
+    [Header("精灵配置")]
+    [SerializeField] private Sprite filledSprite; // 黄色
+    [SerializeField] private Sprite emptySprite;  // 灰色
+
+    [Header("可选：调整 Tint 颜色")]
+    [SerializeField] private Color filledTint = Color.white;
+    [SerializeField] private Color emptyTint = Color.white;
+
+    [Header("方向设置")]
+    [Tooltip("是否反转显示顺序（例如想让顶部/左侧代表剩余最高位）")]
+    [SerializeField] private bool invertVisualOrder = false;
+
+    private readonly List<Image> _points = new List<Image>();
+    private int _cachedMax = -1;
+
+    public void Refresh(int current, int max)
     {
-        for (int i = 0; i < pointImages.Count; i++)
+        if (max <= 0) return;
+        if (max != _cachedMax)
         {
-            // 如果点的索引小于当前的点数，则显示为“已填充”颜色，否则为“空”颜色
-            if (i < currentPoints)
+            Rebuild(max);
+            _cachedMax = max;
+        }
+
+        current = Mathf.Clamp(current, 0, max);
+
+        for (int i = 0; i < _points.Count; i++)
+        {
+            // 视觉顺序可反转
+            int logicalIndex = invertVisualOrder ? (_points.Count - 1 - i) : i;
+
+            bool stillHave = logicalIndex < current; // 剩余点：黄色
+            var img = _points[i];
+
+            if (filledSprite != null && emptySprite != null)
             {
-                pointImages[i].color = filledColor;
+                img.sprite = stillHave ? filledSprite : emptySprite;
+                img.color = stillHave ? filledTint : emptyTint;
             }
             else
             {
-                pointImages[i].color = emptyColor;
+                // 兜底：如果未配置精灵，可用纯色占位
+                img.color = stillHave ? Color.yellow : Color.gray;
             }
+        }
+    }
+
+    private void Rebuild(int max)
+    {
+        // 删除旧点
+        for (int i = _points.Count - 1; i >= 0; i--)
+        {
+            if (_points[i] != null)
+            {
+                if (Application.isPlaying)
+                    Destroy(_points[i].gameObject);
+                else
+                    DestroyImmediate(_points[i].gameObject);
+            }
+        }
+        _points.Clear();
+
+        if (container == null || pointPrefab == null) return;
+
+        for (int i = 0; i < max; i++)
+        {
+            var img = Instantiate(pointPrefab, container);
+            img.name = $"AP_Point_{i + 1}";
+            _points.Add(img);
         }
     }
 }
